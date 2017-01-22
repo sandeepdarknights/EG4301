@@ -1,0 +1,39 @@
+application: health-to-go
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /
+  script: main.app
+
+- url: /stylesheets
+  static_dir: stylesheets
+
+# Twitter Bootstrap
+- url: /bootstrap
+  static_dir: bootstrap
+
+- url: /img
+  static_dir: img
+
+- url: /listall
+  script: main.app
+#  login: admin
+
+# This must be the last one
+- url: /.*
+  script: main.app
+  login: required
+
+libraries:
+- name: webapp2
+  version: latest
+
+- name: jinja2
+  version: latest
