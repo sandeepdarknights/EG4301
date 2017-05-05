@@ -1,0 +1,262 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <form action="/triage" method="post" role="form" id="triage-form">
+            <div class="col-xs-6">
+                <h1 align="middle"> Patient's Information </h1>
+                <h5 align="middle">Proceed to register patient and fill in personal particulars</h5>
+                <div class="form-group">
+                    <label for="name"> Name </label>
+                    <input type="text" class="form-control" id="name" name="name" value="">
+                </div>
+                <div class="form-group">
+                    <label for="nric"> ID </label>
+                    <input type="text" class="form-control" id="nric" name="nric" value="{{nric_num}}">
+                </div>
+                <p>
+                   
+                    <input type="radio" name="gender" value="male" > Male
+                    <input type="radio" name="gender" value="female"> Female
+                </p>
+
+                <p>
+                  
+                    <input type="radio" name="nationality" value="singaporean" > Singaporean
+                    <input type="radio" name="nationality" value="pr"> PR
+                    <input type="radio" name="nationality" value="others"> Others  
+                 
+                </p>
+                <!-- Insert dropdown for country of birth -->
+                <div class="form-group">
+                    <label for="dob"> Date of Birth </label>
+                    <input type="text" class="form-control" name="dob" id="dob" value="">
+                </div>
+                <div class="form-group">
+                    <label for="zipcode"> Zipcode </label>
+                    <input type="text" class="form-control" name="zipcode" id="zipcode" value="">
+                </div>
+                <div class="form-group">
+                    <label for="race"> Race </label>
+                    <input type="text" class="form-control" name="race" id="race" value="">
+                </div>
+                <div class="form-group">
+                    <label for="mobile_number"> Mobile Number </label>
+                    <input type="tel" class="form-control" name="mobile_number" id="mobile_number"
+                           value="">
+                </div>
+                <div class="form-group">
+                    <label for="address"> Address </label>
+                    <input type="text" class="form-control" name="address" id="address" value="">
+                </div>
+                <div class="form-group">
+                    <label for="add_info"> Additional Information </label>
+                    <input type="text" class="form-control" name="add_info" id="add_info" value="">
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <h1 align="middle"> Triage Information </h1>
+                <h5 align="middle">Proceed to perform triage on patient</h5>
+                <label for="travel_history">Travel History </label>
+                <input type="text" name="travel_history" id="travel_history"
+                       value=""
+                       data-role="tagsinput" data-provide="typeahead">
+                <input type='text' name='mouseArray' id='mouseArray' hidden>
+                
+
+                <p><b> Chief Complaint </b></p>
+                
+                <textarea class="form-control" name="chief_complaint" rows="2"></textarea>
+                
+                <br/>
+                
+                <script type="text/javascript"> google.charts.load('current', {'packages':['corechart']});
+                google.charts.setOnLoadCallback(drawChart);
+                var tempData = [];
+                var dataToSave = [];
+                function drawChart() {
+                    var patientMouseArrayString = '';
+                    console.log(patientMouseArrayString);
+                    if (patientMouseArrayString == '') {
+                        console.log("got here");
+                        tempData = [
+                            ['Time', 'Patient'],
+                            ['0', 0],
+                            ['0', 0],
+                            ['0', 0],
+                            ['0', 0],
+                            ['0', 0],
+                            ['0', 0],
+                            ['0', 0],
+                            ['0', 0],
+                            ['0', 0],
+                            ['0', 0]
+                            ];
+                        console.log(tempData);
+                    } else {
+                        tempData = JSON.parse(patientMouseArrayString);
+                        console.log(tempData);
+                    }
+
+                    
+                var dataToLoad = tempData;
+                // if (localStorage.array) {
+                //     dataToLoad = JSON.parse(localStorage.getItem("array"));
+                // } else {
+                //     dataToLoad = tempData;
+                //     localStorage.setItem("array", JSON.stringify(tempData));
+                // }
+                dataToSave = dataToLoad;
+                var data = google.visualization.arrayToDataTable(dataToLoad);
+                var options = {
+                title: 'Patient ID  {{nric_num}}',
+                curveType: 'none',
+                legend: { position: 'none' }};
+                var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+                chart.draw(data, options);}
+
+
+                document.getElementById('triage-form').onsubmit = function() {
+                    console.log("got here");
+                    var txt = document.getElementById('mouseArray');
+                    txt.value = JSON.stringify(dataToSave);
+                    console.log(txt.value);
+                  };
+                </script>
+                <!--Load the AJAX API for Google Charts-->
+                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                <!--Load the AJAX API for Google Charts-->
+                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+                <p><b> Triage Chart </b></p>
+                <!--Div that will hold the line chart-->
+                <div id="curve_chart"></div>
+                <br/>
+                <p align="right">
+                <button type="button" id="update_button" class="btn btn-info btn-circle"> Update Plot</button>
+                </p>
+                <p><b> Recommended Patient Classification </b></p>
+
+                <p>
+               
+                    <input type="radio" name="classification" value="1" > P1 <br/>
+                    <input type="radio" name="classification" value="2"> P2 <br/>
+                    <input type="radio" name="classification" value="3"> P3 <br/>
+                    <input type="radio" name="classification" value="4"> P4 <br/>
+                    
+                </p>
+                <br/>
+                <p align="right">
+            <button class="btn btn-primary" type="submit" value="save"> Save</button>
+            <a href="/listall">
+            <button id="cancel-triage" type="button" class="btn btn-danger confirmation-callback"> Cancel</button>
+            </a></p>
+
+            </div>
+             
+        </form>
+    </div>
+   
+</div>
+
+<script>
+    $(function () {
+        $('.confirmation-callback').confirmation({
+            onConfirm: function () {
+                window.location = "/listall";
+            },
+            onCancel: function () {
+            },
+            btnOkLabel: '<i class="icon-ok-sign icon-white"></i> Yes',
+            title: "Discard changes?"
+        });
+    });
+      var dataHasUpdated = false;
+    document.getElementById('update_button').onclick = function() {
+        if (!dataHasUpdated) {
+            var dataToLoad = tempData;
+            console.log("dataToLoad initially" + dataToLoad);
+            tempData = [
+                ['Time', 'Patient ID  {{nric_num}}']
+                {% for response in a %}
+                ,['{{ a[loop.index0][0]|safe }}', {{ a[loop.index0][1]|safe }}]
+                {% endfor %}];
+            console.log("tempData" + tempData);
+            dataToLoad.splice(1, 1);
+            dataToLoad.push(tempData[tempData.length - 1]);
+            console.log("next time tempData");
+            console.log(tempData);
+            console.log("next time " + dataToLoad);
+            dataHasUpdated = true;
+            dataToSave = dataToLoad;
+            var data = google.visualization.arrayToDataTable(dataToLoad);
+            var options = {
+            title: 'Patient ID  {{nric_num}}',
+            curveType: 'none',
+            legend: { position: 'none' }};
+            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+            chart.draw(data, options);    
+        }
+    };
+</script>
+<script>
+    $('#travel_history').tagsinput({
+        typeahead: {
+            source: ["America", "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua & Deps", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina", "Burma", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Rep", "Chad", "Chile", "China", "Colombia", "Comoros", "Democratic Republic of the Congo", "Republic of the Congo", "Costa Rica,", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Danzig", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gaza Strip", "The Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Holy Roman Empire", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Republic of Ireland", "Israel", "Italy", "Ivory Coast", "Jamaica", "Japan", "Jonathanland", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "North Korea", "South Korea", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mount Athos", "Mozambique", "Namibia", "Nauru", "Nepal", "Newfoundland", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Ottoman Empire", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Prussia", "Qatar", "Romania", "Rome", "Russian Federation", "Rwanda", "St Kitts & Nevis", "St Lucia", "Saint Vincent & the", "Grenadines", "Samoa", "San Marino", "Sao Tome & Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "Spain", "Sri Lanka", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad & Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"]
+        }
+    });
+</script>
+
+<script>
+$("#travel_history").on('itemAdded', function(event) {
+    $(".bootstrap-tagsinput").find("input").val("");
+    $(".bootstrap-tagsinput").find("input").select();
+});
+</script>
+
+<script>
+    $('#triage-form').on('keyup keypress', function(e) {
+  var code = e.keyCode || e.which;
+  if (code == 13) {
+    e.preventDefault();
+    return false;
+  }
+});</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("#measure_button").click(function(e){
+        e.preventDefault();
+        $.ajax({
+            type: 'GET',
+            url: "https://api.thingspeak.com/channels/61240/feeds/last?api_key=HYCPXF3T8CAJMT4X",
+            dataType: 'json',
+            success: function(result){
+
+                $("#heart_rate").html(result['field1']);
+                $("#input_heart_rate").val(result['field1']);
+                $("#temperature").html(result['field2']);
+                $("#input_temperature").val(result['field2']);
+                $("#respo_rate").html(30);
+                $("#input_respo_rate").val(30);
+                $("#bp").html(40);
+                $("#input_bp").val(40);
+        }});
+    });
+
+    $.ajax({
+        url: "http://logicpd.m2.exosite.com:80/api:v1/rpc/process/alias?nric",
+        headers: {
+            "X-Exosite-CIK": "22781660f6fa7fbfe773057dfa4e93cb83e85869",
+            "Request-Timeout": "60000",
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        success: function(result){
+            console.log(result);
+        }
+    });
+});
+</script>
+
+{% endblock %}

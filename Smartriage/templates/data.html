@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block body %}
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-12">
+				<h1>This page will contain Data</h1>
+          {% for reading in readings %}
+         <p>{{reading.name}}</p>
+				{% endfor %}
+      <script type="text/javascript">
+google.charts.load('current', {'packages':['corechart']});
+              google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Time', 'Patient A']
+          {% for response in a %}
+          ,['{{ a[loop.index0][0]|safe }}', {{ a[loop.index0][1]|safe }}]
+          {% endfor %}
+
+        ]);
+
+        var options = {
+          title: 'Temperature vs Time Plot',
+          curveType: 'function',
+          hAxis: {title: 'Patient A',  titleTextStyle: {color: '#333'}},
+          legend: { position: 'none' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+    <!--Load the AJAX API for Google Charts-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <!--Load the AJAX API for Google Charts-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+  
+    <!--Div that will hold the pie chart-->
+    <div id="curve_chart"></div>
+  
+
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
